@@ -52,7 +52,7 @@
     },
     save : {
       method: "GET",
-      url: "step1save.json"
+      url: "demo/step1save.json"
     },
 
     responseRouting: {
@@ -73,7 +73,7 @@
     },
     save : {
       method: "GET",
-      url: "pinsave.json"
+      url: "demo/pinsave.json"
     },
 
     responseRouting: {
