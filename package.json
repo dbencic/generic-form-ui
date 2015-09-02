@@ -1,0 +1,47 @@
+{
+  "name": "generic-form-ui",
+  "version": "1.0.0",
+  "description": "Library for creating UI for generic form models",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dbencic/generic-form-ui.git"
+  },
+  "keywords": [
+    "form",
+    "react",
+    "tcomb",
+    "UI",
+    "DDD"
+  ],
+  "author": "Dragan Bencic <dragan.bencic@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dbencic/generic-form-ui/issues"
+  },
+  "peerDependencies": {
+    "react": "^0.13.0",
+    "tcomb-form": "^0.6.3"
+  },
+  "dependencies": {
+    "aum-tcomb-form-lib": "git://github.com/dbencic/aum-tcomb-form-lib.git",
+    "bootstrap": "3.x.x",
+    "jquery": "*",
+    "react-bootstrap": "^0.25.1"
+  },
+  "devDependencies": {
+    "babelify": "latest",
+    "browserify": "latest",
+    "watchify": "latest"
+  },
+  "scripts": {
+    "build:dev": "browserify index.js > dist/index.dev.js",
+    "build:watch": "watchify index.js -o dist/index.dev.js -dv"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "homepage": "https://github.com/dbencic/generic-form-ui#readme"
+}
