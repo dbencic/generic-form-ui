@@ -53,11 +53,36 @@
     save : {
       method: "GET",
       url: "demo/step1save.json"
+    },
+
+    responseRouting: {
+      "2" : "verifyPin"
+    }
+  }
+
+  var verifyPinConfig = {
+    title : "Verifikacija pin-a",
+    description: "Kako bi omogućili pristup, na vaš broj telefona poslan vam je pin. Molim da ga ovdje unesete.",
+    formConfig : {
+      model : t.struct({
+        pin: t.Str
+      }),
+      options: {
+        pin: {label: "Pin"}
+      }
+    },
+    save : {
+      method: "GET",
+      url: "demo/pinsave.json"
+    },
+
+    responseRouting: {
     }
   }
 
   var wizardConfig = {
-    main : step1Config
+    start : step1Config,
+    verifyPin : verifyPinConfig
   }
 
   return wizardConfig;

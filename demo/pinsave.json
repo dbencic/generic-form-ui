@@ -1,4 +1,7 @@
-{
-	"status": "1",
-	"message" : "You have done it!"
+(function(){return function(t, aumTcomb) {
+var stepConfig = {
+	status: "1",
+	message : "You have done it!"
 }
+return stepConfig;
+}})();
