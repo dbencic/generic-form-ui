@@ -52,7 +52,7 @@
     },
     save : {
       method: "GET",
-      url: "demo/step1save.json"
+      url: "demo/step1save.js"
     }
   }
 

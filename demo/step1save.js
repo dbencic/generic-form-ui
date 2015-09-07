@@ -3,6 +3,7 @@
 var stepConfig = {
 	status : "2",
 	message : "Please fill value greater than 11",
+	data : {},
 	next : {
 	    title : "Verifikacija pin-a",
 	    description: "Kako bi omogućili pristup, na vaš broj telefona poslan vam je pin. Molim da ga ovdje unesete.",
@@ -16,7 +17,7 @@ var stepConfig = {
 	    },
 	    save : {
 	      method: "GET",
-	      url: "demo/pinsave.json"
+	      url: "demo/pinsave.js"
 	    }
   }
 }
