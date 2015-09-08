@@ -19,3 +19,6 @@ check source of demo/wizardConfig.js to see how it works
 ### Please open browser console to see warnings if missconfiguration occurs.
 
 ### NOTE: THIS IS STILL ONLY ALPHA, THUS DEVELOPMENT VERSION
+
+##Wizard title and description
+If you have #wizard-title and #wizard-description elements on your page, you can pass wizard title and description in your configuration. Check example in demo/fullconnect/wizardConfig.js
