@@ -2,7 +2,7 @@
 
 var response = {
 	status : "2",
-	message : "Please fill value greater than 11",
+	message : "Autentifikacija uspjela!",
 	next : {
 	    title : "Verifikacija pin-a",
 	    description: "Kako bi omogućili pristup, na vaš broj telefona poslan vam je pin. Molim da ga ovdje unesete.",
@@ -17,7 +17,7 @@ var response = {
 	    },
 	    save : {
 	      method: "GET",
-	      url: "demo/pinsave.js"
+	      url: "demo/fullconnect/step3save.js"
 	    }
   }
 }

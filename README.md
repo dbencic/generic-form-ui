@@ -1,17 +1,21 @@
-*GENERIC FORM UI LIB
+# GENERIC FORM UI LIB
 
 Enables creation of dynamic wizards UI
 
-**To start perform the following (you must have node allreasy installed):
+## To start perform the following (you must have node allreasy installed):
 
-npm install
-npm run build:dev
-./startServer.py
+- npm install
+- npm run build:dev
+- ./startServer.py
+- Sample wizards:
 
-navigate to http://localhost:8000/index.html?descriptor=demo/wizardConfig.js
+	http://localhost:8000/index.html?descriptor=demo/wizardConfig.js
+	http://localhost:8000/index.html?descriptor=demo/firsttime/wizardConfig.js
+	http://localhost:8000/index.html?descriptor=demo/fullconnect/wizardConfig.js
+
 
 check source of demo/wizardConfig.js to see how it works
 
-*** Please open browser console to see warnings if missconfiguration occurs.
+### Please open browser console to see warnings if missconfiguration occurs.
 
-*** NOTE: THIS IS STILL ONLY ALPHA, THUS DEVELOPMENT VERSION
+### NOTE: THIS IS STILL ONLY ALPHA, THUS DEVELOPMENT VERSION
