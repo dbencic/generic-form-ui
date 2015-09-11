@@ -1,4 +1,4 @@
-import Wizard from "./lib/wizard";
+import Wizard from "./wizard";
 
 var wizardElementId = "wizard-content";
 

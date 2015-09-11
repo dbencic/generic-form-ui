@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import WizardStep from "./wizardStep.js";
+import WizardStep from "./lib/wizardStep.js";
 import jQuery from "jquery";
 import aumTcomb from "aum-tcomb-form-lib";
 import t from "tcomb-form";
@@ -50,13 +50,38 @@ class Wizard {
     this.wizardElementIdSelector = "#" + wizardElementId;
 
     doRequest(descriptorURL, (data)=>{
-      console.log("got descriptor from " + descriptorURL + " : " + data);
-      let configFactory = eval(data);
-      this.descriptor = configFactory(t, aumTcomb);
+      console.log("got wizard descriptor from " + descriptorURL + " : " + data);
+      this.descriptor = this.parseDescriptor(data);
       console.log(this.descriptor);
-      this.loadWizardStep(this.descriptor.start);
+      this.addWizardTitle(this.descriptor);
+      this.loadWizardStep(this.descriptor.main);
     }, this.onError, undefined, undefined, "text");
 
+  }
+
+  addWizardTitle(descriptor) {
+    if (!descriptor) {
+      console.warn("Non existing descriptor passed here!");
+    }
+    if (descriptor.title) {
+      jQuery("#wizard-title").html(descriptor.title);
+    }
+    if (descriptor.description) {
+      jQuery("#wizard-description").html(descriptor.description);
+    }
+  }
+
+  /**
+   * @param data to be evaluated
+   */
+  parseDescriptor(data) {
+    if (!data || data == null) {
+      console.warn("Descriptor to be parsed to JS is null");
+      return undefined;
+    }
+    let configFactory = eval(data);
+    let descriptor = configFactory(t, aumTcomb);
+    return descriptor;
   }
 
   /**
@@ -105,45 +130,45 @@ class Wizard {
       console.log("invoked save script: " + save.url + " and got result: ");
       console.log(data);
       this.processResponse(data);
-    }, this.showError.bind(this), save.method, value);
+    }, this.showError.bind(this), save.method, value, "text");
   }
 
   /**
    * processes response from 'save' action
    */
   processResponse(responseData) {
-    if (responseData.message) {
-      alert(responseData.message);
-    }
-    let status = responseData.status;
+    var descriptor = this.parseDescriptor(responseData);
+    let status = descriptor.status;
     if (!status) {
-      console.warn(responseData);
+      console.warn(descriptor);
       console.warn("status field is not defined in response! Finishing the wizard by convention.");
       status = "0";
     }
     if (status == "0" || status == "end") {
       console.log("Finishing the wizard");
-      //finishTheWizard(); //TODO: implement this
+      this.finishWizard(descriptor.message);
       return;//nothing to do
     }
-    let responseRouting = this.currentStep.responseRouting;
-    if (!responseRouting) {
-      console.warn("Current step descriptor's responseRouting is not defined. Aborting response processing.");
-      return;
+    if (descriptor.message) {
+      alert(descriptor.message);
     }
-    var nextStepName = responseRouting[status];
-    console.log("Next step name got by quering responseRouting by status  " + status + " is " + nextStepName);
-    if (nextStepName) {
-      let nextStep = this.descriptor[nextStepName];
-      if (nextStep) {
-        this.loadWizardStep(nextStep);
-      }else {
-        console.warn("Next step: " + nextStepName + " for status: " + status + 
-          " does not exists in wizardConfig. Make sure that wizardConfig contains member: " + nextStepName);
-      }
+    let nextStep = descriptor.next;
+    if (nextStep) {
+      this.loadWizardStep(nextStep);
     }else {
-      console.warn("Next step for status: " + status + " is not declared. Nothing to do.");
+      console.warn("Next step for status: " + status + 
+        " does not exists in wizardConfig. If status is '0' or 'end' wizard will be finished. Otherwise expecting 'next' " +
+        "field (with configuration for next step) inside response.");
     }
+  }
+
+  /**
+   * shows the success message and cleans all forms
+   * @param lastStepMessage message returned on by last step save method
+   */
+  finishWizard(lastStepMessage) {
+    let message = (lastStepMessage)?lastStepMessage:"Uspješno ste dovršili unos podataka";
+    jQuery(this.wizardElementIdSelector).html("<div class='alert alert-success'><i class='glyphicon glyphicon-ok' /> " + message + "</div>");//cleans
   }
 
   /**
