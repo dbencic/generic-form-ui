@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import WizardStep from "./wizardStep.js";
+import WizardStep from "./lib/wizardStep.js";
 import jQuery from "jquery";
 import aumTcomb from "aum-tcomb-form-lib";
 import t from "tcomb-form";
+import eventEmitter from "./lib/event-emitter-factory";
 
 /**
  * utility function
@@ -11,7 +12,8 @@ function doRequest(url, onSuccess,
     onError = function(errorText) {
       alert(errorText);
     },
-    requestMethod="GET", requestData, responseDataType = "json") {
+    requestMethod="GET", requestData, responseDataType = "json",
+    requestContentType = "application/json; charset=utf-8"/*"application/x-www-form-urlencoded; charset=UTF-8"*/) {
   if (!onSuccess) {
     throw "onSuccess must be defined";
   }
@@ -20,6 +22,7 @@ function doRequest(url, onSuccess,
     dataType : responseDataType,
     method : requestMethod,
     data: requestData,
+    contentType: requestContentType,
     url: url,
     success : function(data){
       onSuccess(data);
@@ -37,18 +40,25 @@ function doRequest(url, onSuccess,
 /**
  * Class that encapsulates wizard, related sequence of web forms, functionality
  */
-class Wizard {
+class UiFormController {
 
-  //descriptor zamjeniti sa descriptorURL
+  /**
+   *
+   */
   constructor(descriptorURL, wizardElementId = "wizard-content") {
-
-    if (!descriptorURL) {
-      throw "descriptorURL should be suplied";
-    }
 
     this.wizardElementId = wizardElementId;
     this.wizardElementIdSelector = "#" + wizardElementId;
 
+  }
+
+  /**
+   * starts the wizard
+   */
+  start(descriptorURL) {
+    if (!descriptorURL) {
+      throw "descriptorURL should be suplied";
+    }
     doRequest(descriptorURL, (data)=>{
       console.log("got wizard descriptor from " + descriptorURL + " : " + data);
       this.descriptor = this.parseDescriptor(data);
@@ -56,7 +66,6 @@ class Wizard {
       this.addWizardTitle(this.descriptor);
       this.loadWizardStep(this.descriptor.main);
     }, this.onError, undefined, undefined, "text");
-
   }
 
   addWizardTitle(descriptor) {
@@ -107,7 +116,8 @@ class Wizard {
       let wizardStep = <WizardStep model={formDescriptor.model} options={formDescriptor.options} 
         value={stepConfig.data} buttonLabel="Spremi" next={this.onCurrentStepSubmitted.bind(this)}
           title={stepConfig.title} description={stepConfig.description} />;
-      React.render(wizardStep, document.getElementById(this.wizardElementId));
+      this.wizardStepComponent = React.render(wizardStep, document.getElementById(this.wizardElementId));
+      console.log(this.wizardStepComponent);
     }catch(e) {
       console.error(e);
       this.showError(e.message);
@@ -130,14 +140,14 @@ class Wizard {
       console.log("invoked save script: " + save.url + " and got result: ");
       console.log(data);
       this.processResponse(data);
-    }, this.showError.bind(this), save.method, value, "text");
+    }, this.showError.bind(this), save.method, JSON.stringify(value), "text");
   }
 
   /**
    * processes response from 'save' action
    */
   processResponse(responseData) {
-    var descriptor = this.parseDescriptor(responseData);
+    let descriptor = this.parseDescriptor(responseData);
     let status = descriptor.status;
     if (!status) {
       console.warn(descriptor);
@@ -149,10 +159,28 @@ class Wizard {
       this.finishWizard(descriptor.message);
       return;//nothing to do
     }
-    if (descriptor.message) {
+    if (descriptor.message && descriptor.message != "") {
       alert(descriptor.message);
     }
-    let nextStep = descriptor.next;
+    let validationErrors = descriptor.validationErrors;
+    if (jQuery.isEmptyObject(validationErrors)) {
+      this.loadNextStep(descriptor.next);
+    }else {
+      this.showValidationErrors(validationErrors);
+    }
+  }
+
+  /**
+   * validation errors
+   */
+  showValidationErrors(validationErrors) {
+    eventEmitter.emit("asyncSaveErrors", validationErrors);
+  }
+
+  /**
+   *
+   */
+  loadNextStep(nextStep) {
     if (nextStep) {
       this.loadWizardStep(nextStep);
     }else {
@@ -180,8 +208,8 @@ class Wizard {
     jQuery(this.wizardElementIdSelector).html(errorHtml);
   }
 
-// end class Wizard (finall bracket follows)
+// end class WizardController (finall bracket follows)
 }
 
-export default Wizard;
+export default UiFormController;
 

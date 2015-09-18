@@ -5,19 +5,22 @@
       "3" : "Advanced"
   });
 
+  var GreaterThan12 = t.subtype(t.Num, function(value) {
+    return value > 12;
+  });
+
   var step1FormConfig = {
     
     model : t.struct({
       name: t.Str,
       surname: t.Str,
       email: t.maybe(aumTcomb.types.Email),
-      age: aumTcomb.types.Positive,
+      age: GreaterThan12,
       dateOfBirth: t.Dat,
       accountType: AccountTypes
     }),
 
     options : {
-      hasError:false,
       fields: {
         name: {
           label: "Ime",
@@ -25,6 +28,10 @@
         },
         surname: {
           label: "Prezime"
+        },
+        age: {
+          label: "Starost",
+          error: "Morate biti stariji od 12 godina"
         },
         email: {
           label: "E-mail",
@@ -45,14 +52,14 @@
     title: "Unos osobnih podataka",
     formConfig : step1FormConfig,
     data : {
-      name : "Dragan",
-      surname: "Bencic",
+      name : "Drag",
+      surname: "Benc",
       dateOfBirth: new Date(2000, 10, 12),
       accountType: "2"
     },
     save : {
-      method: "GET",
-      url: "demo/step1save.js"
+      method: "POST",
+      url: "/save/step1"
     }
   }
 

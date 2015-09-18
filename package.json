@@ -2,7 +2,7 @@
   "name": "generic-form-ui",
   "version": "1.0.0",
   "description": "Library for creating UI for generic form models",
-  "main": "wizard.js",
+  "main": "ui-form-controller.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dbencic/generic-form-ui.git"
@@ -25,7 +25,10 @@
   },
   "dependencies": {
     "aum-tcomb-form-lib": "git://github.com/dbencic/aum-tcomb-form-lib.git",
+    "body-parser": "^1.14.0",
     "bootstrap": "3.x.x",
+    "clone": "^1.0.2",
+    "ejs": "^2.3.4",
     "express": "^4.13.3",
     "jquery": "*",
     "react-bootstrap": "^0.25.1"

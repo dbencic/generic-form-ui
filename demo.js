@@ -1,4 +1,4 @@
-import Wizard from "./wizard";
+import UiFormController from "./ui-form-controller";
 
 var wizardElementId = "wizard-content";
 
@@ -11,5 +11,6 @@ function getQueryParam(param) {
     return param;
 }
 
-let descriptor = getQueryParam("descriptor");
-let wizard = new Wizard(descriptor, wizardElementId);
+let descriptorURL = getQueryParam("descriptor");
+let uiFormController = new UiFormController(wizardElementId);
+uiFormController.start(descriptorURL);
