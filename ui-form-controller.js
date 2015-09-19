@@ -3,7 +3,7 @@ import WizardStep from "./lib/wizardStep.js";
 import jQuery from "jquery";
 import aumTcomb from "aum-tcomb-form-lib";
 import t from "tcomb-form";
-import eventEmitter from "./lib/event-emitter-factory";
+import clone from "clone";
 
 /**
  * utility function
@@ -38,90 +38,72 @@ function doRequest(url, onSuccess,
 }
 
 /**
+ * @param data to be evaluated
+ */
+function parseDescriptor(data) {
+  if (!data || data == null) {
+    console.warn("Descriptor to be parsed to JS is null");
+    return undefined;
+  }
+  let configFactory = eval(data);
+  let descriptor = configFactory(t, aumTcomb);
+  return descriptor;
+}
+
+
+/**
  * Class that encapsulates wizard, related sequence of web forms, functionality
  */
-class UiFormController {
+class UiFormController extends Component{
 
   /**
    *
    */
-  constructor(descriptorURL, wizardElementId = "wizard-content") {
-
-    this.wizardElementId = wizardElementId;
-    this.wizardElementIdSelector = "#" + wizardElementId;
-
+  constructor() {
+    super();
+    this.state = {};
   }
 
   /**
    * starts the wizard
    */
-  start(descriptorURL) {
+  componentWillMount() {
+    let descriptorURL = this.props.descriptorURL;
     if (!descriptorURL) {
       throw "descriptorURL should be suplied";
     }
     doRequest(descriptorURL, (data)=>{
       console.log("got wizard descriptor from " + descriptorURL + " : " + data);
-      this.descriptor = this.parseDescriptor(data);
-      console.log(this.descriptor);
-      this.addWizardTitle(this.descriptor);
-      this.loadWizardStep(this.descriptor.main);
+      let descriptor = parseDescriptor(data);
+      console.log(descriptor);
+//      this.addWizardTitle(descriptor);
+      this.setState({currentStep: descriptor.main, options: descriptor.main.formConfig.options, value: descriptor.main.data});
     }, this.onError, undefined, undefined, "text");
-  }
-
-  addWizardTitle(descriptor) {
-    if (!descriptor) {
-      console.warn("Non existing descriptor passed here!");
-    }
-    if (descriptor.title) {
-      jQuery("#wizard-title").html(descriptor.title);
-    }
-    if (descriptor.description) {
-      jQuery("#wizard-description").html(descriptor.description);
-    }
-  }
-
-  /**
-   * @param data to be evaluated
-   */
-  parseDescriptor(data) {
-    if (!data || data == null) {
-      console.warn("Descriptor to be parsed to JS is null");
-      return undefined;
-    }
-    let configFactory = eval(data);
-    let descriptor = configFactory(t, aumTcomb);
-    return descriptor;
-  }
-
-  /**
-   * Loads data to be edited by the step and then proceedes with form creation
-   */
-  loadWizardStep(stepToLoad) {
-    console.log("loading wizard step:");
-    console.log(stepToLoad);
-    this.currentStep = stepToLoad;
-    jQuery(this.wizardElementIdSelector).html("<div class='alert alert-info'> Loading data...</div>");//cleans
-    this.createForm(stepToLoad);
   }
 
   /**
    * when step is loaded creates form
-   * @param stepConfig configuration of the step
-   * @param data data to be edited by form. Can be undefined
    */
-  createForm(stepConfig) {
-    let formDescriptor = stepConfig.formConfig;
-    jQuery(this.wizardElementIdSelector).html("");
-    try {
-      let wizardStep = <WizardStep model={formDescriptor.model} options={formDescriptor.options} 
-        value={stepConfig.data} buttonLabel="Spremi" next={this.onCurrentStepSubmitted.bind(this)}
-          title={stepConfig.title} description={stepConfig.description} />;
-      this.wizardStepComponent = React.render(wizardStep, document.getElementById(this.wizardElementId));
-      console.log(this.wizardStepComponent);
-    }catch(e) {
-      console.error(e);
-      this.showError(e.message);
+  render() {
+    if (this.state.errorMessage) {//loading wizard for the first time probably
+      return <div className='alert alert-danger'> {this.state.errorMessage} </div>;
     }
+    if (this.state.responseStatus == "0" || this.state.responseStatus == "end") {//finishes the wizard
+      let message = (this.state.message||"Uspješno ste dovršili unos podataka");
+      return <div className="alert alert-success"><i className="glyphicon glyphicon-ok" dangerouslySetInnerHTML={{__html: message}} /></div>;//cleans
+    }
+    if (!this.state.currentStep) {//loading wizard for the first time probably
+      return <div className='alert alert-info'> Loading data...</div>;
+    }
+    let stepConfig = this.state.currentStep;
+    let formDescriptor = stepConfig.formConfig;
+    console.log("rendering step:");
+    console.log(stepConfig);
+    return <WizardStep model={formDescriptor.model} options={this.state.options} 
+      value={this.state.value} buttonLabel="Spremi" next={this.onCurrentStepSubmitted.bind(this)}
+        title={stepConfig.title} description={stepConfig.description} />;
+    
+    
   }
 
   /**
@@ -129,7 +111,10 @@ class UiFormController {
    * This calls "save" url defined in StepConfiguration
    */
   onCurrentStepSubmitted(value) {
-    let save = this.currentStep.save;
+    let state = this.state;
+    state.value = value;
+    this.setState(state);
+    let save = this.state.currentStep.save;
     if (!save) {
       throw "'save' attribute in wizard step descriptor is mandatory";
     }
@@ -140,41 +125,65 @@ class UiFormController {
       console.log("invoked save script: " + save.url + " and got result: ");
       console.log(data);
       this.processResponse(data);
-    }, this.showError.bind(this), save.method, JSON.stringify(value), "text");
+    }, (errorMessage)=>this.setState({errorMessage: errorMessage}), save.method, JSON.stringify(value), "text");
   }
 
   /**
    * processes response from 'save' action
    */
   processResponse(responseData) {
-    let descriptor = this.parseDescriptor(responseData);
+    let descriptor = parseDescriptor(responseData);
     let status = descriptor.status;
     if (!status) {
       console.warn(descriptor);
       console.warn("status field is not defined in response! Finishing the wizard by convention.");
       status = "0";
     }
+    let nextState = {responseStatus: status, 
+        message: descriptor.message,
+        validationErrors: descriptor.validationErrors,
+        value: this.state.value,
+        currentStep: jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep
+     };
     if (status == "0" || status == "end") {
       console.log("Finishing the wizard");
-      this.finishWizard(descriptor.message);
+      this.setState(nextState);
       return;//nothing to do
     }
     if (descriptor.message && descriptor.message != "") {
       alert(descriptor.message);
     }
-    let validationErrors = descriptor.validationErrors;
-    if (jQuery.isEmptyObject(validationErrors)) {
-      this.loadNextStep(descriptor.next);
-    }else {
-      this.showValidationErrors(validationErrors);
-    }
+    this.mergeAsyncErrorsAndSetOptions(nextState);
+    this.setState(nextState);
   }
 
   /**
-   * validation errors
+   * async errors are expected to be something like:
+   * {username : "name allready taken", age : "You must be over 18"}
    */
-  showValidationErrors(validationErrors) {
-    eventEmitter.emit("asyncSaveErrors", validationErrors);
+  mergeAsyncErrorsAndSetOptions(state) {
+    let asyncSaveErrors = state.validationErrors;
+    let initialOptions = state.currentStep.formConfig.options;
+    if (jQuery.isEmptyObject(asyncSaveErrors)) {
+      state.options = initialOptions;
+      return;
+    }
+    console.log("Logging async save error");  
+    console.log(asyncSaveErrors);
+    /*creates new options*/
+    let newOptions = clone(initialOptions);
+    for (let errorField in asyncSaveErrors) {
+      let fieldConfig = newOptions.fields[errorField];
+      if (!fieldConfig) {
+        fieldConfig = {};
+        newOptions.fields[errorField] = fieldConfig;
+      }
+      fieldConfig.hasError = true;
+      fieldConfig.error = asyncSaveErrors[errorField];
+    }
+    console.log("Async errors set in options");
+    console.log(newOptions);
+    state.options = newOptions;
   }
 
   /**
@@ -188,24 +197,6 @@ class UiFormController {
         " does not exists in wizardConfig. If status is '0' or 'end' wizard will be finished. Otherwise expecting 'next' " +
         "field (with configuration for next step) inside response.");
     }
-  }
-
-  /**
-   * shows the success message and cleans all forms
-   * @param lastStepMessage message returned on by last step save method
-   */
-  finishWizard(lastStepMessage) {
-    let message = (lastStepMessage)?lastStepMessage:"Uspješno ste dovršili unos podataka";
-    jQuery(this.wizardElementIdSelector).html("<div class='alert alert-success'><i class='glyphicon glyphicon-ok' /> " + message + "</div>");//cleans
-  }
-
-  /**
-   * shows error when something goes wrong
-   */
-  showError(errorText) {
-    //TODO: replace this in future with react component with reset button?
-    let errorHtml = "<div class='alert alert-danger'>" + errorText  + "</div>";
-    jQuery(this.wizardElementIdSelector).html(errorHtml);
   }
 
 // end class WizardController (finall bracket follows)

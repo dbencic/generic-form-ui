@@ -1,3 +1,4 @@
+import React from "react";
 import UiFormController from "./ui-form-controller";
 
 var wizardElementId = "wizard-content";
@@ -12,5 +13,5 @@ function getQueryParam(param) {
 }
 
 let descriptorURL = getQueryParam("descriptor");
-let uiFormController = new UiFormController(wizardElementId);
-uiFormController.start(descriptorURL);
+let uiFormController = <UiFormController descriptorURL={descriptorURL} />;
+React.render(uiFormController, document.getElementById(wizardElementId));
