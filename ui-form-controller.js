@@ -202,5 +202,9 @@ class UiFormController extends Component{
 // end class WizardController (finall bracket follows)
 }
 
+UiFormController.propTypes = {
+  descriptorURL : React.PropTypes.string.isRequired
+}
+
 export default UiFormController;
 
