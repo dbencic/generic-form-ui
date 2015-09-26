@@ -39,9 +39,9 @@
     "watchify": "latest"
   },
   "scripts": {
-    "demo:watch": "watchify demo.js -o dist/demo.dev.js -dv",
-    "demo:build": "browserify demo.js -o dist/demo.dev.js",
-    "build:dev": "browserify wizard.js -o dist/wizard.dev.js"
+    "watch:dev": "watchify demo.js -o dist/demo.dev.js -dv",
+    "build:dev": "browserify demo.js -o dist/demo.dev.js",
+    "build:main": "browserify ui-form-controller.js -o dist/ui-form-controller.dev.js"
   },
   "browserify": {
     "transform": [

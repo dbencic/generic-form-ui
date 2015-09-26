@@ -60,10 +60,12 @@
     save : {
       method: "POST",
       url: "/save/step1"
-    }
+    },
+    messageWhenSaving: "Spremam vaše osobne podatke..."
   }
 
   var wizardConfig = {
+    buttonLabel: "Dalje",
     main : step1Config
   }
 

@@ -75,8 +75,9 @@ class UiFormController extends Component{
     doRequest(descriptorURL, (data)=>{
       console.log("got wizard descriptor from " + descriptorURL + " : " + data);
       let descriptor = parseDescriptor(data);
+      this.descriptor = descriptor;
       console.log(descriptor);
-//      this.addWizardTitle(descriptor);
+//      sets initial options
       this.setState({currentStep: descriptor.main, options: descriptor.main.formConfig.options, value: descriptor.main.data});
     }, this.onError, undefined, undefined, "text");
   }
@@ -100,8 +101,10 @@ class UiFormController extends Component{
     console.log("rendering step:");
     console.log(stepConfig);
     return <WizardStep model={formDescriptor.model} options={this.state.options} 
-      value={this.state.value} buttonLabel="Spremi" next={this.onCurrentStepSubmitted.bind(this)}
-        title={stepConfig.title} description={stepConfig.description} />;
+      value={this.state.value} buttonLabel={this.descriptor.buttonLabel}
+        savingButtonLabel={this.state.currentStep.messageWhenSaving}
+        next={this.onCurrentStepSubmitted.bind(this)}
+        title={stepConfig.title} description={stepConfig.description} saving={this.state.saving} />;
     
     
   }
@@ -112,8 +115,6 @@ class UiFormController extends Component{
    */
   onCurrentStepSubmitted(value) {
     let state = this.state;
-    state.value = value;
-    this.setState(state);
     let save = this.state.currentStep.save;
     if (!save) {
       throw "'save' attribute in wizard step descriptor is mandatory";
@@ -121,6 +122,11 @@ class UiFormController extends Component{
     if (!save.method || !save.url) {
       throw "'save.method' and 'save.url' are mandatory.";
     }
+    //changes state
+    state.value = value;
+    state.saving = true;
+    this.setState(state);
+
     doRequest(save.url, (data)=>{
       console.log("invoked save script: " + save.url + " and got result: ");
       console.log(data);
@@ -143,7 +149,8 @@ class UiFormController extends Component{
         message: descriptor.message,
         validationErrors: descriptor.validationErrors,
         value: this.state.value,
-        currentStep: jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep
+        currentStep: jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep,
+        saving: false
      };
     if (status == "0" || status == "end") {
       console.log("Finishing the wizard");

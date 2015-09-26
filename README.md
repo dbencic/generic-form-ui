@@ -16,7 +16,7 @@ uiFormController.start(descriptorURL);
 ## To lounch demo perform the following (you must have node allready installed):
 
 - npm install
-- npm run demo:build
+- npm run build:dev
 - node server.js
 
 
@@ -68,6 +68,18 @@ and follow log in console to see what is hapening. Trey following:
 Add little number (ex 1) in field "Starost".
 Leave other fields as they are and submit the form.
 
-##Wizard title and description
+##Display options
+Display options include customization of various messages.
 
+###Wizard title and description
 If you have #wizard-title and #wizard-description elements on your page, you can pass wizard title and description in your configuration. Check example in demo/fullconnect/wizardConfig.js
+
+###Customization of button caption message
+By default submit button has text "Save" on it. You can customize this by setting attribute '**buttonLabel**' in wizard configuration. Point your browser to 
+http://localhost:8000/demo/wizardConfig.js when server is started.
+
+###Customization of saving messages
+When user clicks "save" button, it gets disabled and text is changed to message indicating that save opertion is in process. There is default message, but if you want to customize it, you can set '**messageWhenSaving**' in step config.
+Look at http://localhost:8000/demo/wizardConfig.js when server is started to see such sample configuration, and point to 
+http://localhost:8000/?descriptor=demo/wizardConfig.js
+to see working example (when saving first step, there is delay of 1 second on server in order to demonstrate saving message behaviour.) 

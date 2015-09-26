@@ -15,8 +15,11 @@ module.exports = function(request, response) {
 		message = "Provjerom na serveru ustanovljena je neispravnost pojedinih polja. Molimo ispravite parametre označene crveno.";
 	}
 	
-	response.render("step1saveResponse.ejs", {
-		validationErrors: validationErrors,
-		message: message
-	});
+	//simulira zadršku na serveru kako bi simulirao save message
+	this.setTimeout(function() {
+		response.render("step1saveResponse.ejs", {
+			validationErrors: validationErrors,
+			message: message
+		})
+		}, 1000);
 }
