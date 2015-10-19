@@ -82,4 +82,20 @@ http://localhost:8000/demo/wizardConfig.js when server is started.
 When user clicks "save" button, it gets disabled and text is changed to message indicating that save opertion is in process. There is default message, but if you want to customize it, you can set '**messageWhenSaving**' in step config.
 Look at http://localhost:8000/demo/wizardConfig.js when server is started to see such sample configuration, and point to 
 http://localhost:8000/?descriptor=demo/wizardConfig.js
-to see working example (when saving first step, there is delay of 1 second on server in order to demonstrate saving message behaviour.) 
+to see working example (when saving first step, there is delay of 1 second on server in order to demonstrate saving message behaviour.)
+
+##Saving data
+How to save data is described in "save" attribute of step config. See demo/wizardConfig.js for reference. Following attributes are accepted:
+..- __method__ ("GET" | "POST" | "DELETE" | "PUT" etc) default GET
+..- __url__ , where to save data (ex: /my/awesome/script)
+..- __requestContentType__ ("application/json; charset=utf-8" | "application/x-www-form-urlencoded; charset=UTF-8") default json
+example
+```json
+save : {
+      method: "POST",
+      url: "/save/step1",
+      requestContentType: "application/json; charset=utf-8"
+//      requestContentType: "application/x-www-form-urlencoded; charset=UTF-8"
+    }
+```
+

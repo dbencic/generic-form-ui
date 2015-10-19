@@ -59,7 +59,9 @@
     },
     save : {
       method: "POST",
-      url: "/save/step1"
+      url: "/save/step1",
+      requestContentType: "application/json; charset=utf-8"
+//      requestContentType: "application/x-www-form-urlencoded; charset=UTF-8"
     },
     messageWhenSaving: "Spremam vaše osobne podatke..."
   }

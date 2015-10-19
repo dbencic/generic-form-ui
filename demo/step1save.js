@@ -6,7 +6,9 @@ var response = {
 	next : {
 	    title : "Verifikacija pin-a",
 	    description: "Kako bi omogućili pristup, na vaš broj telefona poslan vam je pin. Molim da ga ovdje unesete.",
-	    data : {},
+	    data : {
+	    	pin: "12345"
+	    },
 	    formConfig : {
 	      model : t.struct({
 	        pin: t.Str

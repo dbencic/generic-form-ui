@@ -131,7 +131,8 @@ class UiFormController extends Component{
       console.log("invoked save script: " + save.url + " and got result: ");
       console.log(data);
       this.processResponse(data);
-    }, (errorMessage)=>this.setState({errorMessage: errorMessage}), save.method, JSON.stringify(value), "text");
+    }, (errorMessage)=>this.setState({errorMessage: errorMessage}), save.method,
+        JSON.stringify(value), "text", save.requestContentType);
   }
 
   /**
@@ -145,10 +146,11 @@ class UiFormController extends Component{
       console.warn("status field is not defined in response! Finishing the wizard by convention.");
       status = "0";
     }
+    let stateStep = jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep;
     let nextState = {responseStatus: status, 
         message: descriptor.message,
         validationErrors: descriptor.validationErrors,
-        value: this.state.value,
+        value: (stateStep)?stateStep.data:this.state.value,//this.state.value,
         currentStep: jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep,
         saving: false
      };
