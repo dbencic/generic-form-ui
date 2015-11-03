@@ -147,12 +147,13 @@ class UiFormController extends Component{
       console.warn("status field is not defined in response! Finishing the wizard by convention.");
       status = "0";
     }
-    let stateStep = jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep;
+//    let stateStep = jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep;
+    let isResponseOK = jQuery.isEmptyObject(descriptor.validationErrors);
     let nextState = {responseStatus: status, 
         message: descriptor.message,
         validationErrors: descriptor.validationErrors,
-        value: (stateStep)?stateStep.data:this.state.value,//this.state.value,
-        currentStep: jQuery.isEmptyObject(descriptor.validationErrors)?descriptor.next:this.state.currentStep,
+        value: (isResponseOK)?descriptor.next.value:this.state.value,//this.state.value,
+        currentStep: (isResponseOK)?descriptor.next:this.state.currentStep,
         saving: false
      };
     if (status == "0" || status == "end") {

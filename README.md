@@ -76,10 +76,25 @@ If you have #wizard-title and #wizard-description elements on your page, you can
 
 ###Customization of button caption message
 By default submit button has text "Save" on it. You can customize this by setting attribute '**buttonLabel**' in wizard configuration. Point your browser to 
-http://localhost:8000/demo/wizardConfig.js when server is started.
+http://localhost:8000/demo/wizardConfig.js when server is started to see the example. '**buttonLabel**' can be customized for every step, by putting '**buttonLabel**' attribute in 'save' property of wizard step configuration:
+```javascript
+save : {
+      buttonLabel : "Dalje",
+      method: "POST",
+      url: "/save/step1",
+      requestContentType: "application/json; charset=utf-8",
+      expectedSaveDurationSeconds : 15
+//      requestContentType: "application/x-www-form-urlencoded; charset=UTF-8"
+    }
+```
+
+###Customization of saving operation duration
+In previous example you can notice '**expectedSaveDurationSeconds**' attribute. If set, user will see countdown while savimg data to server, thus will be able to see that something is actively hapening. It is recommended to set this parameter for long(er) operations to 'pesimistic' value. If operation finishes earlier nobody will complain.
+
 
 ###Customization of saving messages
 When user clicks "save" button, it gets disabled and text is changed to message indicating that save opertion is in process. There is default message, but if you want to customize it, you can set '**messageWhenSaving**' in step config.
+Alternatively '**messageWhenSaving**' attribute of wizard can be set as default for all steps.
 Look at http://localhost:8000/demo/wizardConfig.js when server is started to see such sample configuration, and point to 
 http://localhost:8000/?descriptor=demo/wizardConfig.js
 to see working example (when saving first step, there is delay of 1 second on server in order to demonstrate saving message behaviour.)

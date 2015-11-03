@@ -69,7 +69,8 @@
   }
 
   var wizardConfig = {
-    buttonLabel: "Dalje",
+    buttonLabel: "Spremi",
+    messageWhenSaving: "Spremam podatke na sever, molim pričekajte...",
     main : step1Config
   }
 
