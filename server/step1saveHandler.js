@@ -21,5 +21,5 @@ module.exports = function(request, response) {
 			validationErrors: validationErrors,
 			message: message
 		})
-		}, 1000);
+		}, 10000);
 }

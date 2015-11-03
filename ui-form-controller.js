@@ -101,8 +101,9 @@ class UiFormController extends Component{
     console.log("rendering step:");
     console.log(stepConfig);
     return <WizardStep model={formDescriptor.model} options={this.state.options} 
-      value={this.state.value} buttonLabel={this.descriptor.buttonLabel}
-        savingButtonLabel={this.state.currentStep.messageWhenSaving}
+      value={this.state.value} buttonLabel={this.state.currentStep.save.buttonLabel || this.descriptor.buttonLabel}
+        savingButtonLabel={this.state.currentStep.messageWhenSaving || this.descriptor.messageWhenSaving}
+        expectedSaveDurationSeconds={this.state.currentStep.save.expectedSaveDurationSeconds}
         next={this.onCurrentStepSubmitted.bind(this)}
         title={stepConfig.title} description={stepConfig.description} saving={this.state.saving} />;
     
