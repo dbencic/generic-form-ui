@@ -86,9 +86,9 @@ to see working example (when saving first step, there is delay of 1 second on se
 
 ##Saving data
 How to save data is described in "save" attribute of step config. See demo/wizardConfig.js for reference. Following attributes are accepted:
-..- __method__ ("GET" | "POST" | "DELETE" | "PUT" etc) default GET
-..- __url__ , where to save data (ex: /my/awesome/script)
-..- __requestContentType__ ("application/json; charset=utf-8" | "application/x-www-form-urlencoded; charset=UTF-8") default json
++ __method__ ("GET" | "POST" | "DELETE" | "PUT" etc) default GET
++ __url__ , where to save data (ex: /my/awesome/script)
++ __requestContentType__ ("application/json; charset=utf-8" | "application/x-www-form-urlencoded; charset=UTF-8") default json
 example
 ```json
 save : {
