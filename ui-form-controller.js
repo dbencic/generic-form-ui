@@ -152,7 +152,7 @@ class UiFormController extends Component{
     let nextState = {responseStatus: status, 
         message: descriptor.message,
         validationErrors: descriptor.validationErrors,
-        value: (isResponseOK && descriptor.next)?descriptor.next.value:this.state.value,//this.state.value,
+        value: (isResponseOK && descriptor.next)?descriptor.next.data:this.state.value,//this.state.value,
         currentStep: (isResponseOK)?descriptor.next:this.state.currentStep,
         saving: false
      };
@@ -165,6 +165,8 @@ class UiFormController extends Component{
       alert(descriptor.message);
     }
     this.mergeAsyncErrorsAndSetOptions(nextState);
+    console.log("Next state:");
+    console.log(nextState);
     this.setState(nextState);
   }
 
