@@ -152,7 +152,7 @@ class UiFormController extends Component{
     let nextState = {responseStatus: status, 
         message: descriptor.message,
         validationErrors: descriptor.validationErrors,
-        value: (isResponseOK)?descriptor.next.value:this.state.value,//this.state.value,
+        value: (isResponseOK && descriptor.next)?descriptor.next.value:this.state.value,//this.state.value,
         currentStep: (isResponseOK)?descriptor.next:this.state.currentStep,
         saving: false
      };

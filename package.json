@@ -1,6 +1,6 @@
 {
   "name": "generic-form-ui",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Library for creating UI for generic form models",
   "main": "ui-form-controller.js",
   "repository": {
