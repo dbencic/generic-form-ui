@@ -3,7 +3,7 @@ import WizardStep from "./lib/wizardStep.js";
 import jQuery from "jquery";
 import aumTcomb from "aum-tcomb-form-lib";
 import t from "tcomb-form";
-import clone from "clone";
+import deepclone from "deepclone";
 
 /**
  * utility function
@@ -184,7 +184,7 @@ class UiFormController extends Component{
     console.log("Logging async save error");  
     console.log(asyncSaveErrors);
     /*creates new options*/
-    let newOptions = clone(initialOptions);
+    let newOptions = deepclone(initialOptions);
     for (let errorField in asyncSaveErrors) {
       let fieldConfig = newOptions.fields[errorField];
       if (!fieldConfig) {
