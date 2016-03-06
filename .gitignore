@@ -3,3 +3,9 @@ dist/*.js
 .DS_Store
 index.bundle.dev.js
 npm-debug.log
+
+#IntelliJ IDEA project files
+.idea/
+*.ipr
+*.iml
+*.iws
