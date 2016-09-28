@@ -1,4 +1,11 @@
-(function(){return function(t, aumTcomb) {
+(function(){return function(t) {
+  var emailCheck=/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
+
+  var Email = t.subtype(t.Str, function (address) {
+    return emailCheck.test(address);
+  }, "Email");
+
+
   var AccountTypes = t.enums({
       "1" : "Basic",
       "2" : "Normal",
@@ -14,9 +21,8 @@
     model : t.struct({
       name: t.Str,
       surname: t.Str,
-      email: t.maybe(aumTcomb.types.Email),
+      email: t.maybe(Email),
       age: GreaterThan12,
-      dateOfBirth: t.Dat,
       accountType: AccountTypes
     }),
 
@@ -37,16 +43,10 @@
           label: "E-mail",
           type: "email",
           error: "Neispravan format email adrese"
-        },
-        dateOfBirth: {
-          factory: aumTcomb.form.DateComponent,
-          label: "Datum rođenja",
-          type: "date",
-          className: "pero"
         }
       }
     }
-  }
+  };
 
   var step1Config = {
     title: "Unos osobnih podataka",
@@ -66,13 +66,13 @@
 //      requestContentType: "application/x-www-form-urlencoded; charset=UTF-8"
     },
     messageWhenSaving: "Spremam vaše osobne podatke..."
-  }
+  };
 
   var wizardConfig = {
     buttonLabel: "Spremi",
     messageWhenSaving: "Spremam podatke na sever, molim pričekajte...",
     main : step1Config
-  }
+  };
 
   return wizardConfig;
 }})();

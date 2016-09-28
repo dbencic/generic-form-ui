@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import WizardStep from "./lib/wizardStep.js";
 import jQuery from "jquery";
-import aumTcomb from "aum-tcomb-form-lib";
 import t from "tcomb-form";
 import deepclone from "deepclone";
 
@@ -13,7 +12,7 @@ function doRequest(url, onSuccess,
       alert(errorText);
     },
     requestMethod="GET", requestData, responseDataType = "json",
-    requestContentType = "application/json; charset=utf-8"/*"application/x-www-form-urlencoded; charset=UTF-8"*/) {
+    requestContentType = "application/json; charset=utf-8") {
   if (!onSuccess) {
     throw "onSuccess must be defined";
   }
@@ -46,7 +45,7 @@ function parseDescriptor(data) {
     return undefined;
   }
   let configFactory = eval(data);
-  let descriptor = configFactory(t, aumTcomb);
+  let descriptor = configFactory(t);
   return descriptor;
 }
 
@@ -217,7 +216,7 @@ class UiFormController extends Component{
 
 UiFormController.propTypes = {
   descriptorURL : React.PropTypes.string.isRequired
-}
+};
 
 export default UiFormController;
 
