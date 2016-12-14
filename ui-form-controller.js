@@ -72,7 +72,7 @@ class UiFormController extends Component{
     }catch(e) {
       console.log(e.stack);
       if (this.props.reportErrorUrl) {
-        doRequest(this.props.reportErrorUrl, ()=>{}, undefined,
+        doRequest(this.props.descriptorErrorReportURL, ()=>{}, undefined,
           "POST", {
             url: _lastUrl,
             method: _lastMethod,
@@ -253,7 +253,7 @@ class UiFormController extends Component{
 
 UiFormController.propTypes = {
   descriptorURL : React.PropTypes.string.isRequired,
-  reportErrorUrl: React.PropTypes.string
+  descriptorErrorReportURL: React.PropTypes.string
 };
 
 export default UiFormController;
