@@ -70,8 +70,8 @@ class UiFormController extends Component{
       let descriptor = configFactory(t);
       return descriptor;
     }catch(e) {
-      console.log(e.stack);
-      if (this.props.reportErrorUrl) {
+      console.error(e.stack);
+      if (this.props.descriptorErrorReportURL) {
         doRequest(this.props.descriptorErrorReportURL, ()=>{}, undefined,
           "POST", {
             url: _lastUrl,
