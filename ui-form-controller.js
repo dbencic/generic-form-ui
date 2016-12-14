@@ -4,6 +4,9 @@ import jQuery from "jquery";
 import t from "tcomb-form";
 import deepclone from "deepclone";
 
+var _lastUrl;
+var _lastRequestData;
+var _lastMethod;
 /**
  * utility function
  */
@@ -17,6 +20,10 @@ function doRequest(url, onSuccess,
     throw "onSuccess must be defined";
   }
   
+  _lastUrl = url;
+  _lastMethod = requestMethod;
+  _lastRequestData = requestData;
+
   jQuery.ajax({
     dataType : responseDataType,
     method : requestMethod,
@@ -36,19 +43,6 @@ function doRequest(url, onSuccess,
   });
 }
 
-/**
- * @param data to be evaluated
- */
-function parseDescriptor(data) {
-  if (!data || data == null) {
-    console.warn("Descriptor to be parsed to JS is null");
-    return undefined;
-  }
-  let configFactory = eval(data);
-  let descriptor = configFactory(t);
-  return descriptor;
-}
-
 
 /**
  * Class that encapsulates wizard, related sequence of web forms, functionality
@@ -64,6 +58,47 @@ class UiFormController extends Component{
   }
 
   /**
+   * @param data to be evaluated
+   */
+  parseDescriptor(data) {
+    if (!data || data == null) {
+      console.warn("Descriptor to be parsed to JS is null");
+      return undefined;
+    }
+    try {
+      let configFactory = eval(data);
+      let descriptor = configFactory(t);
+      return descriptor;
+    }catch(e) {
+      console.log(e.stack);
+      if (this.props.reportErrorUrl) {
+        doRequest(this.props.reportErrorUrl, ()=>{}, undefined,
+          "POST", {
+            url: _lastUrl,
+            method: _lastMethod,
+            requestData: _lastRequestData,
+            obtainedDescriptor: data,
+            stackTrace: e.stack
+          }, "text", "application/x-www-form-urlencoded");
+        throw e;
+      }
+    }
+  }
+
+  getDescriptorFromData(data) {
+    try {
+        this.descriptor = this.parseDescriptor(data);
+      }catch(e) {
+        this.setState({
+          errorMessage: "Error parsing wizard descriptor."
+        });
+        return;
+      }
+      console.log(this.descriptor);
+      return this.descriptor;
+  }
+
+  /**
    * starts the wizard
    */
   componentWillMount() {
@@ -71,14 +106,15 @@ class UiFormController extends Component{
     if (!descriptorURL) {
       throw "descriptorURL should be suplied";
     }
-    doRequest(descriptorURL, (data)=>{
+    var onDescriptorUrlSuccess = (data)=>{
       console.log("got wizard descriptor from " + descriptorURL + " : " + data);
-      let descriptor = parseDescriptor(data);
-      this.descriptor = descriptor;
-      console.log(descriptor);
+      if (!this.getDescriptorFromData(data)) return;
+      let descriptor = this.descriptor;
 //      sets initial options
       this.setState({currentStep: descriptor.main, options: descriptor.main.formConfig.options, value: descriptor.main.data});
-    }, this.onError, undefined, undefined, "text");
+    };
+
+    doRequest(descriptorURL, onDescriptorUrlSuccess, this.onError, undefined, undefined, "text");
   }
 
   /**
@@ -139,7 +175,8 @@ class UiFormController extends Component{
    * processes response from 'save' action
    */
   processResponse(responseData) {
-    let descriptor = parseDescriptor(responseData);
+    if (!this.getDescriptorFromData(responseData)) return;
+    let descriptor = this.descriptor;
     let status = descriptor.status;
     if (!status) {
       console.warn(descriptor);
@@ -201,21 +238,22 @@ class UiFormController extends Component{
   /**
    *
    */
-  loadNextStep(nextStep) {
-    if (nextStep) {
-      this.loadWizardStep(nextStep);
-    }else {
-      console.warn("Next step for status: " + status + 
-        " does not exists in wizardConfig. If status is '0' or 'end' wizard will be finished. Otherwise expecting 'next' " +
-        "field (with configuration for next step) inside response.");
-    }
-  }
+  // loadNextStep(nextStep) {
+  //   if (nextStep) {
+  //     this.loadWizardStep(nextStep);
+  //   }else {
+  //     console.warn("Next step for status: " + status + 
+  //       " does not exists in wizardConfig. If status is '0' or 'end' wizard will be finished. Otherwise expecting 'next' " +
+  //       "field (with configuration for next step) inside response.");
+  //   }
+  // }
 
 // end class WizardController (finall bracket follows)
 }
 
 UiFormController.propTypes = {
-  descriptorURL : React.PropTypes.string.isRequired
+  descriptorURL : React.PropTypes.string.isRequired,
+  reportErrorUrl: React.PropTypes.string
 };
 
 export default UiFormController;
