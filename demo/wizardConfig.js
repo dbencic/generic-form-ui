@@ -30,7 +30,7 @@
       fields: {
         name: {
           label: "Ime",
-          error: "molim unesite ime"
+          error: "molim "unesite ime"
         },
         surname: {
           label: "Prezime"

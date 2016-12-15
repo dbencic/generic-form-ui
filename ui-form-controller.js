@@ -80,8 +80,8 @@ class UiFormController extends Component{
             obtainedDescriptor: data,
             stackTrace: e.stack
           }, "text", "application/x-www-form-urlencoded");
-        throw e;
       }
+      throw e;
     }
   }
 
