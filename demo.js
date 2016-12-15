@@ -14,5 +14,9 @@ function getQueryParam(param) {
 }
 
 let descriptorURL = getQueryParam("descriptor");
-let uiFormController = <UiFormController descriptorURL={descriptorURL} reportErrorUrl="/wizard/errorReport" />;
+let errorReportURL =  getQueryParam("errorReport");
+//PRVO: ./startServer
+//BROWSER: http://localhost:8000/?descriptor=/demo/wizardConfig.js&errorReport=/wizard/errorReport
+
+let uiFormController = <UiFormController descriptorURL={descriptorURL} descriptorErrorReportURL={errorReportURL} />;
 ReactDOM.render(uiFormController, document.getElementById(wizardElementId));
